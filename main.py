@@ -5,12 +5,18 @@ from PIL import Image, ImageTk
 from tkinter.messagebox import showinfo
 import ctypes
 import os
+import sys
 
 myappid = u'youtube.downloader.subproduct.version'
 ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
 
 # os path
 cwd = os.path.realpath(os.path.dirname(__file__))
+
+def resource_path(relative_path):
+    """ Get absolute path to resource, works for dev and for PyInstaller """
+    base_path = getattr(sys, '_MEIPASS', os.path.dirname(os.path.abspath(__file__)))
+    return os.path.join(base_path, relative_path)
 
 
 # root window
@@ -19,7 +25,7 @@ root = tk.Tk()
 # Load the icon image
 # root.iconphoto(False, tk.PhotoImage(file="youtube.png"))
 # Load the icon image using PIL
-icon = Image.open(f"{cwd}\\youtube.ico")
+icon = Image.open(resource_path("youtube.ico"))
 icon = ImageTk.PhotoImage(icon)
 
 # Set the taskbar icon
