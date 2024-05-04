@@ -1,10 +1,15 @@
 # import pip for the installation
 import pip
 
-# f = open('requirements.txt','r')
-# f = f.read()
-# print(f)
+# load the content from the .txt file
+with open('requirements.txt', 'r', encoding='utf8', ) as f:
+    package = f.read()
+    package = package.split()
+    print(package)
 
-with open('test.txt', 'r', encoding='utf8', ) as f:
-    contents = f.read()
-    print(contents)
+
+def install(package):
+        for n in package:
+              pip.main(['install', n])
+
+install(package)
