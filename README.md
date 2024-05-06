@@ -3,7 +3,7 @@
 (Es wird vorrausgesetzt, dass man Python installiert hat)
 ## Wie lasse ich den Code laufen?
 1. Gebe 'pip install -r requirements.txt' ins Terminal ein.
-Diese installiert alles nötige, um den Code laufen zu lassen
+Diese installiert alles nötige, um den Code laufen zu lassen.
 2. Führe die main.py aus
 3. Gebe einen Link ein und die gewünschte Auflösung. Anschließend kannst du das Video in dem Ordner "Videos" finden.
 
