@@ -1,12 +1,11 @@
 import yt_dlp
 import ctypes
-import tkinter as tk
-from tkinter import ttk
-from PIL import Image, ImageTk
-from tkinter.messagebox import showinfo
+import time
+import customtkinter as ctk
 import os
 import sys
-
+from customtkinter import CTk
+from CTkMessagebox import CTkMessagebox
 # For information see also:
 #
 # - [General Doc](https://pypi.org/project/yt-dlp/)
@@ -15,14 +14,7 @@ import sys
 
 myappid = u'youtube.downloader.subproduct.version'
 ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
-root = tk.Tk()
-root.geometry("500x300")
-root.resizable(True, True)
-root.title('Youtube downloader')
 
-# store youtube link and resulotion
-youtube_link = tk.StringVar()
-resolution = tk.IntVar()
 # URL can alo be a list of URLs
 #https://www.youtube.com/watch?v=lxRj81GiCqM
 URL = ""
@@ -35,19 +27,11 @@ LOG_STATES = {
     'error': True
 }
 
-def resource_path(relative_path):
+def resource_path():
     """ Get absolute path to resource, works for dev and for PyInstaller """
     base_path = getattr(sys, '_MEIPASS', os.path.dirname(os.path.abspath(__file__)))
-    return os.path.join(base_path, relative_path)
+    return os.path.join(base_path)
 
-# Load the icon image
-# root.iconphoto(False, tk.PhotoImage(file="youtube.png"))
-# Load the icon image using PIL
-icon = Image.open(resource_path("youtube.ico"))
-icon = ImageTk.PhotoImage(icon)
-
-# Set the taskbar icon
-root.iconphoto(True, icon)
         
 
 def format_selector(ctx):
@@ -159,59 +143,86 @@ class Logger:
         if self.log_states['error']:
             print(f"\033[91m[ERROR]:\033[00m {msg}")
             
+class Error:
+    def __init__(self):
+            CTkMessagebox(
+                title="Error", 
+                message="Du hast keinen Link eingegeben!"
+                )
 
 
-def get_input():
-       yt_link = youtube_link.get()
-       if str(yt_link) == "":
-            msg = 'Gib einen Link ein!'
-            showinfo(
-            title='Fehlermeldung',
-            message=msg
-            )
+class Success:
+    def __init__(self):
+        CTkMessagebox(
+            title="Status",
+            message="Die Eingabe wird verarbeitet!"
+        )
 
-       else:
-            msg = 'Die Anfrage wird gerade verarbeitet'
-            showinfo(
-            title='Status',
-            message=msg
-            )
+class Finished:
+    def __inti__(self):
+        CTkMessagebox(
+            title="Status",
+            message="Das Video wurde erfolgreich gedownloadet!"
+        )
+
+
+class Mainwindow(CTk):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.geometry("500x400")
+        #customtkinter default settings
+        self.resizable(True, True)
+        self.title('Youtube downloader')
+        self.iconbitmap(default=resource_path() + "/youtube.ico")
+
+
+        self.youtube_link = ctk.StringVar()
+
+        self.Messagebox_success = None
+        self.Messagebox_fail = None
+
+
+        self.main_frame = ctk.CTkFrame(self)
+        self.main_frame.pack(padx=10, pady=10, fill='x', expand=True)
+        
+        # Youtube Link 
+        self.youtube_link_label = ctk.CTkLabel(self.main_frame, text="Youtube Link: ")
+        self.youtube_link_label.pack(fill='x', expand=True)
+        
+        self.youtube_link_entry = ctk.CTkEntry(self.main_frame,placeholder_text="Youtube Link", textvariable=self.youtube_link)
+        self.youtube_link_entry.pack(fill='x', expand=True)
+        self.youtube_link_entry.focus()
+        
+        
+        # submit button
+        self.submit_button = ctk.CTkButton(self.main_frame, text="Submit", command=self.get_input)
+        self.submit_button.pack(fill='x', expand=True, pady=10)
+
+    def get_input(self):
+        yt_link = self.youtube_link.get()
+        if str(yt_link) == "":
+                time.sleep(3)
+                Error().__init__()
+        else:
+            time.sleep(3)
+            Success().__init__()
+            time
             ydl_opts = {
-                'format': format_selector,
+                    'format': format_selector,
                 'progress_hooks': [progress_hook],
                 'logger': Logger(LOG_STATES),
             }
-
             with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-            # get information about the video -> see https://pypi.org/project/yt-dlp/#extracting-information
-
-            # import json
-            # info = ydl.extract_info(URL, download=False)
-            # print(json.dumps(ydl.sanitize_info(info), indent=4))
-        
-        
-            # download the actual video, you can also pass a list of URLs
-            # def for the Button
-
-                ydl.download(yt_link)
-
-# Youtube in frame
-youtube_frame = ttk.Frame(root)
-youtube_frame.pack(padx=10, pady=10, fill='x', expand=True)
+                # get information about the video -> see https://pypi.org/project/yt-dlp/#extracting-information
+                # import json
+                # info = ydl.extract_info(URL, download=False)
+                # print(json.dumps(ydl.sanitize_info(info), indent=4))
+                # download the actual video, you can also pass a list of URLs
+                # def for the Button
+                    ydl.download(yt_link)
+            time.sleep(3)
+            Finished().__init__()
 
 
-# Youtube Link 
-youtube_link_label = ttk.Label(youtube_frame, text="Youtube Link: ")
-youtube_link_label.pack(fill='x', expand=True)
-
-youtube_link_entry = ttk.Entry(youtube_frame, textvariable=youtube_link)
-youtube_link_entry.pack(fill='x', expand=True)
-youtube_link_entry.focus()
-
-
-# submit button
-submit_button = ttk.Button(youtube_frame, text="Submit", command=get_input)
-submit_button.pack(fill='x', expand=True, pady=10)
-
-
-root.mainloop()
+app = Mainwindow()
+app.mainloop()
