@@ -1,5 +1,5 @@
 # Youtube-Downloader
-(Die Software ff)
+(Die Software ffmpeg vorrausgesetzt)
 (Es wird vorrausgesetzt, dass man Python installiert hat)
 ## Wie lasse ich den Code laufen?
 1. Gebe 'pip3 install -r requirements.txt' ins Terminal ein.
