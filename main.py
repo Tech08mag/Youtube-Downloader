@@ -1,6 +1,5 @@
 import yt_dlp
 import ctypes
-import time
 import customtkinter as ctk
 import os
 import sys
@@ -32,9 +31,41 @@ def resource_path():
     base_path = getattr(sys, '_MEIPASS', os.path.dirname(os.path.abspath(__file__)))
     return os.path.join(base_path)
 
-        
 
-def format_selector(ctx):
+def format_selector_audio(ctx):
+    """ Select the best video and the best audio that won't result in an mkv.
+    NOTE: This is just an example and does not handle all cases """
+
+    # Reverse the formats list to start from the best quality
+    formats = ctx.get('formats')[::-1]
+
+    # acodec='none' means there is no audio
+    best_video = next(
+        f for f in formats if f['vcodec'] != 'none' and f['acodec'] == 'none')
+
+    # find compatible audio extension
+    audio_ext = {'mp4': 'm4a', 'webm': 'webm'}.get(best_video['ext'], None)
+
+    if audio_ext is None:
+        print('\033[91m[ERROR]:\033[00m No compatible audio extension found!')
+        return
+
+    # vcodec='none' means there is no video
+    best_audio = next(f for f in formats if (
+        f['acodec'] != 'none' and f['vcodec'] == 'none' and f['ext'] == audio_ext))
+
+    # minimum required fields for a merged format
+    yield {
+        'format_id': f'{best_audio["format_id"]}',
+        'ext': best_video['ext'],
+        'requested_formats': [best_audio],
+        # Must be + separated list of protocols
+        'protocol': f'{best_audio["protocol"]}'
+    }
+
+
+
+def format_selector_video(ctx):
     """ Select the best video and the best audio that won't result in an mkv.
     NOTE: This is just an example and does not handle all cases """
 
@@ -177,6 +208,7 @@ class Mainwindow(CTk):
 
 
         self.youtube_link = ctk.StringVar()
+        self.check_var = ctk.StringVar(value="off")
 
         self.Messagebox_success = None
         self.Messagebox_fail = None
@@ -192,6 +224,11 @@ class Mainwindow(CTk):
         self.youtube_link_entry = ctk.CTkEntry(self.main_frame,placeholder_text="Youtube Link", textvariable=self.youtube_link)
         self.youtube_link_entry.pack(fill='x', expand=True)
         self.youtube_link_entry.focus()
+
+        
+        self.checkbox = ctk.CTkCheckBox(self.main_frame, text="only Audio",
+                                     variable=self.check_var, onvalue="on", offvalue="off")
+        self.checkbox.pack(fill='x', expand=True, pady=10)
         
         
         # submit button
@@ -200,15 +237,12 @@ class Mainwindow(CTk):
 
     def get_input(self):
         yt_link = self.youtube_link.get()
+        check_variable = self.check_var.get()
         if str(yt_link) == "":
-                time.sleep(3)
                 Error().__init__()
-        else:
-            time.sleep(3)
-            Success().__init__()
-            time
+        elif check_variable == "on":
             ydl_opts = {
-                    'format': format_selector,
+                'format': format_selector_audio,
                 'progress_hooks': [progress_hook],
                 'logger': Logger(LOG_STATES),
             }
@@ -220,7 +254,23 @@ class Mainwindow(CTk):
                 # download the actual video, you can also pass a list of URLs
                 # def for the Button
                     ydl.download(yt_link)
-            time.sleep(3)
+            Finished().__init__()
+
+
+        else:
+            ydl_opts = {
+                'format': format_selector_video,
+                'progress_hooks': [progress_hook],
+                'logger': Logger(LOG_STATES),
+            }
+            with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+                # get information about the video -> see https://pypi.org/project/yt-dlp/#extracting-information
+                # import json
+                # info = ydl.extract_info(URL, download=False)
+                # print(json.dumps(ydl.sanitize_info(info), indent=4))
+                # download the actual video, you can also pass a list of URLs
+                # def for the Button
+                    ydl.download(yt_link)
             Finished().__init__()
 
 
