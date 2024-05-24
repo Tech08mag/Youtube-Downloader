@@ -4,7 +4,6 @@ import ctypes
 import customtkinter as ctk
 import messages
 import helper
-print(dir(helper))
 # from resolutions import
 
 # For information see also:
@@ -185,7 +184,6 @@ class Mainwindow(ctk.CTk):
 
         self.Messagebox_success = None
         self.Messagebox_fail = None
-        self.youtube_link = ctk.StringVar()
         self.onlyAudio = ctk.StringVar()
         self.Author = ctk.StringVar()
         self.best_res_var = ctk.StringVar()
@@ -198,9 +196,10 @@ class Mainwindow(ctk.CTk):
         self.youtube_link_label = ctk.CTkLabel(self.main_frame, text="Youtube Link: ")
         self.youtube_link_label.pack(padx=10, pady=10, fill='x', expand=True)
         
-        self.youtube_link_entry = ctk.CTkEntry(self.main_frame, placeholder_text="Youtube Link", textvariable=self.youtube_link, 
-                                               validate="key", validatecommand=Mainwindow.callback(self))
-        self.youtube_link_entry.pack(padx=10, pady=10, fill='x', expand=True)
+        youtube_link = ctk.StringVar()
+        youtube_link.trace("w", lambda name, index, mode, sv=youtube_link: Mainwindow.callback(youtube_link))
+        youtube_link_entry = ctk.CTkEntry(self.main_frame, placeholder_text="Youtube Link", textvariable=youtube_link)
+        youtube_link_entry.pack(padx=10, pady=10, fill='x', expand=True)
 
 
         self.checkbox = ctk.CTkCheckBox(self.main_frame, text="only Audio",
@@ -220,16 +219,18 @@ class Mainwindow(ctk.CTk):
                                          variable=self.optionmenu_var)
         self.optionmenu.pack(padx=10, pady=10, fill='x', expand=True)
 
-        self.button = ctk.CTkButton(self.main_frame, text="downloaden", command=self.get_input())
+        self.button = ctk.CTkButton(self.main_frame, text="downloaden", command=self.get_input(youtube_link))
         self.button.pack(padx=10, pady=10, fill='x', expand=True)
 
-    def callback(self):
+    def callback(youtube_link):
         print("Ausgelöst")
-        ylink = self.youtube_link.get()
-        if ylink.startswith("https://www.youtube.com/watch?v="):
+        # ylink = self.youtube_link.get()
+        youtube_link = youtube_link.get()
+        print(youtube_link)
+        if youtube_link.startswith("https://www.youtube.com/watch?v="):
             ydl_opts = {}
             with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-                info = ydl.extract_info(ylink, download=False)
+                info = ydl.extract_info(youtube_link, download=False)
                 formats = info.get('formats')[::-1]
     
                 try:
@@ -243,8 +244,8 @@ class Mainwindow(ctk.CTk):
         else:
             messages.Error_Message()
 
-    def get_input(self):
-        yt_link = self.youtube_link.get()
+    def get_input(self, youtube_link):
+        yt_link = youtube_link.get()
         if yt_link.startswith("https://www.youtube.com/watch?v=") and self.onlyAudio.get() == "on":
 
             ydl_opts = {
