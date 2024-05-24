@@ -2,8 +2,8 @@
 import yt_dlp
 import ctypes
 import customtkinter as ctk
-import messages
-import helper
+#import from own python files
+import messages, helper
 # from resolutions import
 
 # For information see also:
@@ -96,7 +96,6 @@ def format_selector_video(ctx):
         'protocol': f'{best_video["protocol"]}+{best_audio["protocol"]}'
     }
 
-
 def progress_hook(d):
     """ Custom hook to print download progress """
     # see help(yt_dlp.YoutubeDL) for all available fields and more information
@@ -182,102 +181,97 @@ class Mainwindow(ctk.CTk):
         self.iconbitmap(default=helper.resource_path() + "/youtube.ico")
 
 
-        self.Messagebox_success = None
-        self.Messagebox_fail = None
+        # Interface Variabeln
+        Messagebox_success = None
+        Messagebox_fail = None
         self.onlyAudio = ctk.StringVar()
-        self.Author = ctk.StringVar()
+        self.Creator = ctk.StringVar()
         self.best_res_var = ctk.StringVar()
 
-
+        #set the Frame to load the other components
         self.main_frame = ctk.CTkFrame(self)
         self.main_frame.pack(padx=10, pady=10, fill='x', expand=True)
         
-        # Youtube Link 
+        # Create the Label for the Text
         self.youtube_link_label = ctk.CTkLabel(self.main_frame, text="Youtube Link: ")
         self.youtube_link_label.pack(padx=10, pady=10, fill='x', expand=True)
         
-        youtube_link = ctk.StringVar()
-        youtube_link.trace("w", lambda name, index, mode, sv=youtube_link: Mainwindow.callback(youtube_link))
-        youtube_link_entry = ctk.CTkEntry(self.main_frame, placeholder_text="Youtube Link", textvariable=youtube_link)
+        self.youtube_link = ctk.StringVar()
+        self.youtube_link.trace("w", lambda name, index, mode, sv=self.youtube_link: self.load_resolutions())
+        youtube_link_entry = ctk.CTkEntry(self.main_frame, placeholder_text="Youtube Link", textvariable=self.youtube_link)
         youtube_link_entry.pack(padx=10, pady=10, fill='x', expand=True)
 
 
-        self.checkbox = ctk.CTkCheckBox(self.main_frame, text="only Audio",
-                                     variable=self.onlyAudio, onvalue="on", offvalue="off")
+        self.checkbox = ctk.CTkCheckBox(self.main_frame, text="only Audio", variable=self.onlyAudio, onvalue="on", offvalue="off")
         self.checkbox.pack(padx=10, pady=10, fill='x', expand=True)
 
         self.checkbox = ctk.CTkCheckBox(self.main_frame, text="every Video from the auther",
-                                     variable=self.Author, onvalue="on", offvalue="off")
+                                     variable=self.Creator, onvalue="on", offvalue="off")
         self.checkbox.pack(padx=10, pady=10, fill='x', expand=True)
 
-        self.checkbox = ctk.CTkCheckBox(self.main_frame, text="highest resolution",
-                                     variable=self.best_res_var, onvalue="on", offvalue="off")
+        self.checkbox = ctk.CTkCheckBox(self.main_frame, text="highest resolution", variable=self.best_res_var, onvalue="on", offvalue="off")
         self.checkbox.pack(padx=10, pady=10, fill='x', expand=True)
 
         self.optionmenu_var = ctk.StringVar(value=value_storage[0])
-        self.optionmenu = ctk.CTkOptionMenu(self.main_frame,values=value_storage,
-                                         variable=self.optionmenu_var)
+        self.optionmenu = ctk.CTkOptionMenu(self.main_frame, values=value_storage, variable=self.optionmenu_var)
         self.optionmenu.pack(padx=10, pady=10, fill='x', expand=True)
 
-        self.button = ctk.CTkButton(self.main_frame, text="downloaden", command=self.get_input(youtube_link))
+        self.button = ctk.CTkButton(self.main_frame, text="downloaden", command=self.download_vids())
         self.button.pack(padx=10, pady=10, fill='x', expand=True)
 
-    def callback(youtube_link):
+    def load_resolutions(self):
         print("Ausgelöst")
         # ylink = self.youtube_link.get()
-        youtube_link = youtube_link.get()
+        youtube_link = self.youtube_link.get()
+        print(youtube_link)
         if youtube_link.startswith("https://www.youtube.com/watch?v="):
             ydl_opts = {}
             with yt_dlp.YoutubeDL(ydl_opts) as ydl:
                 info = ydl.extract_info(youtube_link, download=False)
                 formats = info.get('formats')[::-1]
-    
                 try:
                     aviable_formats = next(f for f in formats if f['resolution'] == '')
                     value_storage.pop(0)
                     value_storage.append(aviable_formats)
                     print(aviable_formats)
-    
                 except Exception:
                     messages.fail_to_load_formats()
         else:
             messages.Error_Message()
 
-    def get_input(self, youtube_link):
-        yt_link = youtube_link.get()
-        if yt_link.startswith("https://www.youtube.com/watch?v=") and self.onlyAudio.get() == "on":
+    def download_vids(self):
+        yt_link = self.youtube_link.get()
+        if yt_link.startswith("https://www.youtube.com/watch?v=") and Mainwindow.onlyAudio.get() == "on":
 
             ydl_opts = {
-                'format': format_selector_audio,
-                'progress_hooks': [progress_hook],
-                'logger': Logger(LOG_STATES)
-                }
+                            'format': format_selector_audio,
+                        'progress_hooks': [progress_hook],
+                        'logger': Logger(LOG_STATES)
+                        }
 
             with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-                # get information about the video -> see https://pypi.org/project/yt-dlp/#extracting-information
-                # import json
-                # info = ydl.extract_info(URL, download=False)
-                # print(json.dumps(ydl.sanitize_info(info), indent=4))
-                # download the actual video, you can also pass a list of URLs
-                # def for the Button
-                ydl.download(yt_link)
-                messages.Finish_Message()
+                            # get information about the video -> see https://pypi.org/project/yt-dlp/#extracting-information
+                            # import json
+                            # info = ydl.extract_info(URL, download=False)
+                            # print(json.dumps(ydl.sanitize_info(info), indent=4))
+                            # download the actual video, you can also pass a list of URLs
+                            ydl.download(yt_link)
+                            messages.Finish_Message()
 
-        elif yt_link.startswith("https://www.youtube.com/watch?v=") and self.best_res_var.get() == "on":
-            ydl_opts = {
-                'format': format_selector_video,
-                'progress_hooks': [progress_hook],
-                'logger': Logger(LOG_STATES),
-            } 
-            with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-                    # get information about the video -> see https://pypi.org/project/yt-dlp/#extracting-information
-                    # import json
-                    # info = ydl.extract_info(URL, download=False)
-                    # print(json.dumps(ydl.sanitize_info(info), indent=4))
-                    # download the actual video, you can also pass a list of URLs
-                    # def for the Button
-                ydl.download(yt_link)
-                messages.Finish_Message()
+        elif yt_link.startswith("https://www.youtube.com/watch?v=") and Mainwindow.best_res_var == "on":
+                ydl_opts = {
+                    'format': format_selector_video,
+                    'progress_hooks': [progress_hook],
+                    'logger': Logger(LOG_STATES),
+                } 
+                with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+                            # get information about the video -> see https://pypi.org/project/yt-dlp/#extracting-information
+                            # import json
+                            # info = ydl.extract_info(URL, download=False)
+                            # print(json.dumps(ydl.sanitize_info(info), indent=4))
+                            # download the actual video, you can also pass a list of URLs
+                        ydl.download(yt_link)
+                        messages.Finish_Message()
         else:
             messages.Error_Message()
 
