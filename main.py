@@ -1,10 +1,10 @@
+
 import yt_dlp
 import ctypes
 import customtkinter as ctk
-import os
-import sys
-from customtkinter import CTk
-from CTkMessagebox import CTkMessagebox
+import messages
+import helper
+print(dir(helper))
 # from resolutions import
 
 # For information see also:
@@ -31,13 +31,6 @@ LOG_STATES = {
     'warning': True,
     'error': True
 }
-
-
-def resource_path():
-    """ Get absolute path to resource, works for dev and for PyInstaller """
-    base_path = getattr(sys, '_MEIPASS', os.path.dirname(os.path.abspath(__file__)))
-    return os.path.join(base_path)
-
 
 def format_selector_audio(ctx):
     """ Select the best video and the best audio that won't result in an mkv.
@@ -69,7 +62,6 @@ def format_selector_audio(ctx):
         # Must be + separated list of protocols
         'protocol': f'{best_audio["protocol"]}'
     }
-
 
 
 def format_selector_video(ctx):
@@ -180,29 +172,6 @@ class Logger:
     def error(self, msg):
         if self.log_states['error']:
             print(f"\033[91m[ERROR]:\033[00m {msg}")
-            
-class Error:
-    def __init__(self):
-            CTkMessagebox(
-                title="Error", 
-                message="Du hast keinen Link eingegeben!"
-                )
-
-
-class Success:
-    def __init__(self):
-        CTkMessagebox(
-            title="Status",
-            message="Die Eingabe wird verarbeitet!"
-        )
-
-class Finished:
-    def __inti__(self):
-        CTkMessagebox(
-            title="Status",
-            message="Das Video wurde erfolgreich gedownloadet!"
-        )
-
 
 class Mainwindow(ctk.CTk):
     def __init__(self, *args, **kwargs):
@@ -211,7 +180,7 @@ class Mainwindow(ctk.CTk):
         #customtkinter default settings
         self.resizable(True, True)
         self.title('Youtube downloader')
-        self.iconbitmap(default=resource_path() + "/youtube.ico")
+        self.iconbitmap(default=helper.resource_path() + "/youtube.ico")
 
 
         self.Messagebox_success = None
@@ -272,7 +241,7 @@ class Mainwindow(ctk.CTk):
                 except Exception:
                     pass
         else:
-            Error.__init__(self)
+            messages.Error_Message()
 
     def get_input(self):
         yt_link = self.youtube_link.get()
@@ -292,7 +261,7 @@ class Mainwindow(ctk.CTk):
                 # download the actual video, you can also pass a list of URLs
                 # def for the Button
                 ydl.download(yt_link)
-                Finished().__init__()
+                messages.Finish_Message()
 
         elif yt_link.startswith("https://www.youtube.com/watch?v=") and self.best_res_var.get() == "on":
             ydl_opts = {
@@ -308,9 +277,9 @@ class Mainwindow(ctk.CTk):
                     # download the actual video, you can also pass a list of URLs
                     # def for the Button
                 ydl.download(yt_link)
-                Finished().__init__()
+                messages.Finish_Message()
         else:
-            Error().__init__()
+            messages.Error_Message()
 
 
 if __name__ == '__main__':
