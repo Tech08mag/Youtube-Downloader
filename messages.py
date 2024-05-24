@@ -6,6 +6,11 @@ def Error_Message():
         message="Du hast keinen Link eingegeben!"
         )
 
+def fail_to_load_formats():
+    CTkMessagebox(
+    title="Error", 
+    message="Es konnten keine Resolutions für dieses Video gefunden werden!"
+    )
 
 def Success_Message():
     CTkMessagebox(

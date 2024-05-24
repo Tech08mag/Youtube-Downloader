@@ -226,7 +226,6 @@ class Mainwindow(ctk.CTk):
         print("Ausgelöst")
         # ylink = self.youtube_link.get()
         youtube_link = youtube_link.get()
-        print(youtube_link)
         if youtube_link.startswith("https://www.youtube.com/watch?v="):
             ydl_opts = {}
             with yt_dlp.YoutubeDL(ydl_opts) as ydl:
@@ -240,7 +239,7 @@ class Mainwindow(ctk.CTk):
                     print(aviable_formats)
     
                 except Exception:
-                    pass
+                    messages.fail_to_load_formats()
         else:
             messages.Error_Message()
 
