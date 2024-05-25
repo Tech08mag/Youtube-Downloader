@@ -12,11 +12,11 @@ import messages, helper
 # - [Code relevant doc](https://pypi.org/project/yt-dlp/#embedding-yt-dlp)
 # - [GitHub](https://github.com/yt-dlp/yt-dlp)
 
-myappid = u'youtube.downloader.subproduct.version'
-ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
+# myappid = u'youtube.downloader.subproduct.version'
+# ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
 
 
-# URL can alo be a list of URLs
+# URL can also be a list of URLs
 #https://www.youtube.com/watch?v=lxRj81GiCqM
 URL = ""
 value_storage = ["You need to input a link"]
@@ -178,7 +178,7 @@ class Mainwindow(ctk.CTk):
         #customtkinter default settings
         self.resizable(True, True)
         self.title('Youtube downloader')
-        self.iconbitmap(default=helper.resource_path() + "/youtube.ico")
+        # self.iconbitmap(default=helper.resource_path() + "/youtube.ico")
 
 
         # Interface Variabeln
@@ -191,16 +191,22 @@ class Mainwindow(ctk.CTk):
         #set the Frame to load the other components
         self.main_frame = ctk.CTkFrame(self)
         self.main_frame.pack(padx=10, pady=10, fill='x', expand=True)
-        
+
         # Create the Label for the Text
         self.youtube_link_label = ctk.CTkLabel(self.main_frame, text="Youtube Link: ")
         self.youtube_link_label.pack(padx=10, pady=10, fill='x', expand=True)
-        
-        self.youtube_link = ctk.StringVar()
-        self.youtube_link.trace("w", lambda name, index, mode, sv=self.youtube_link: self.load_resolutions())
-        youtube_link_entry = ctk.CTkEntry(self.main_frame, placeholder_text="Youtube Link", textvariable=self.youtube_link)
-        youtube_link_entry.pack(padx=10, pady=10, fill='x', expand=True)
 
+        ### Version 1: Callback bei jedem Tastendruck
+        # self.youtube_link = ctk.StringVar()
+        # self.youtube_link.trace_add("write", lambda name, index, mode, sv=self.youtube_link: self.load_resolutions())
+        # youtube_link_entry = ctk.CTkEntry(self.main_frame, placeholder_text="Youtube Link", textvariable=self.youtube_link)
+        # youtube_link_entry.pack(padx=10, pady=10, fill='x', expand=True)
+
+        ### Version 2: Callback bei Enter
+        self.youtube_link = ctk.StringVar()
+        youtube_link_entry = ctk.CTkEntry(self.main_frame, placeholder_text="Youtube Link", textvariable=self.youtube_link)
+        youtube_link_entry.bind("<Return>", lambda _: self.load_resolutions())
+        youtube_link_entry.pack(padx=10, pady=10, fill='x', expand=True)
 
         self.checkbox = ctk.CTkCheckBox(self.main_frame, text="only Audio", variable=self.onlyAudio, onvalue="on", offvalue="off")
         self.checkbox.pack(padx=10, pady=10, fill='x', expand=True)
@@ -220,24 +226,37 @@ class Mainwindow(ctk.CTk):
         self.button.pack(padx=10, pady=10, fill='x', expand=True)
 
     def load_resolutions(self):
-        print("Ausgelöst")
-        # ylink = self.youtube_link.get()
-        youtube_link = self.youtube_link.get()
-        print(youtube_link)
-        if youtube_link.startswith("https://www.youtube.com/watch?v="):
-            ydl_opts = {}
-            with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-                info = ydl.extract_info(youtube_link, download=False)
-                formats = info.get('formats')[::-1]
-                try:
-                    aviable_formats = next(f for f in formats if f['resolution'] == '')
-                    value_storage.pop(0)
-                    value_storage.append(aviable_formats)
-                    print(aviable_formats)
-                except Exception:
-                    messages.fail_to_load_formats()
-        else:
-            messages.Error_Message()
+        # print("Ausgelöst")
+        yt_link = self.youtube_link.get()
+
+        if not yt_link.startswith("https://www.youtube.com/watch?v="):
+            print("Eingabe ist keine gültige Youtube URL")
+            # messages.fail_to_load_formats()
+            return
+
+        # see help(yt_dlp.YoutubeDL) for a list of all available options and their meaning
+        # listformats: True -> list all available formats (terminal output)
+        yd_opts = {
+            # 'listformats': True,
+            'quiet': True,
+            'no_warnings': True,
+            'skip_download': True
+        }
+
+        with yt_dlp.YoutubeDL(yd_opts) as ydl:
+            info = ydl.extract_info(yt_link, download=False)
+            formats = info.get('formats', [])
+
+            # filter only video formats and get the resolutions
+            video_formats = [f for f in formats if f.get('vcodec') != 'none']
+            resolutions = set([f.get('resolution') for f in video_formats])
+
+            # update the option menu
+            self.optionmenu_var.set(next(iter(resolutions)) if resolutions else "No video formats found")
+            self.optionmenu.configure(values=resolutions)
+
+            # print(f"Resolutions: {resolutions}")
+
 
     def download_vids(self):
         yt_link = self.youtube_link.get()
@@ -263,7 +282,7 @@ class Mainwindow(ctk.CTk):
                     'format': format_selector_video,
                     'progress_hooks': [progress_hook],
                     'logger': Logger(LOG_STATES),
-                } 
+                }
                 with yt_dlp.YoutubeDL(ydl_opts) as ydl:
                             # get information about the video -> see https://pypi.org/project/yt-dlp/#extracting-information
                             # import json
