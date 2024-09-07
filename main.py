@@ -1,12 +1,8 @@
-import yt_dlp
-import ctypes
 import tkinter as tk
 from tkinter import ttk
 from PIL import Image, ImageTk
 from tkinter.messagebox import showinfo
-import os
-import sys
-
+import os, sys, yt_dlp, ctypes
 # For information see also:
 #
 # - [General Doc](https://pypi.org/project/yt-dlp/)
