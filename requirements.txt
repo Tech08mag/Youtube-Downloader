@@ -1,4 +1,1 @@
-yt-dlp==2024.4.9
-pillow==10.3.0
-customtkinter==5.2.2
-CTkMessagebox==2.5
+ÿþ

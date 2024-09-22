@@ -1,6 +1,6 @@
 # Youtube-Downloader
 
-<<<<<<< HEAD
+HEAD
 (Es wird vorrausgesetzt, dass man Python installiert hat)
 
 ## Wie lasse ich den Code laufen?
@@ -17,7 +17,7 @@ pyinstaller --onefile --add-data "youtube.ico:." --add-binary "PATH_TO_FFMPEG:."
 
 
 ## erstellt von tech08mag 
-=======
+
 [![Python][Python]][Python-url] [![ctk][ctk]][ctk-url] [![yt-dlp][yt-dlp]][yt-dlp-url]
 
 # Funktionen
@@ -95,4 +95,3 @@ pyinstaller --onefile --add-data "youtube.ico:." --add-binary "PATH_TO_ffmpeg.ex
 [ctk-url]: https://customtkinter.tomschimansky.com/
 [yt-dlp]: https://img.shields.io/badge/Build--With-yt--dlp-blue
 [yt-dlp-url]: https://github.com/yt-dlp/yt-dlp
->>>>>>> 313c91b8abf623b633ae220f6d87195f52566bf6
