@@ -22,8 +22,7 @@ pyinstaller --onefile --add-data "youtube.ico:." --add-binary "PATH_TO_FFMPEG:."
 
 # Funktionen
 
-- [x] YouTube-Videos in allen Auflösungen herunterladen
-- [x] Audio eines Videos gesondert herunterladen
+- [x] YouTube-Videos in der höchsten Auflösungen herunterladen
 - [x] Grafisches Userinterface mit [custom tkinter](https://customtkinter.tomschimansky.com/)
 
 
