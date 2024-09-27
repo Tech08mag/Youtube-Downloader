@@ -132,12 +132,12 @@ with yt_dlp.YoutubeDL(ydl_opts) as ydl:
     video_title = info_dict.get('title', None)
     source = f"{Path.cwd()}\\{video_title}"
     newname = f"{Path.cwd()}\\{clean_filename(video_title)}"
-    video_title = os.rename(source, newname)
+    os.rename(source, newname)
     print(os.path.exists(f"{Path.cwd()}"))
-    print(os.path.isfile(f"{video_title}"))
+    print(os.path.isfile(f"{newname}"))
 
-    if os.path.exists(f"{Path.cwd()}") and os.path.isfile(f"{video_title}"):
+    if os.path.exists(f"{Path.cwd()}") and os.path.isfile(f"{newname}"):
         save_path = filedialog.asksaveasfilename(title="Save", filetypes=[("Mp4 Files", ".mp4")], defaultextension=".mp4",
             initialdir=Path(sys.executable), initialfile=video_title)
-        shutil.move(video_title, save_path)
+        shutil.move(newname, save_path)
 
