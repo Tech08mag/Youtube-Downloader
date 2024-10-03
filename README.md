@@ -1,6 +1,5 @@
 # Youtube-Downloader
 
-HEAD
 (Es wird vorrausgesetzt, dass man Python installiert hat)
 
 ## Wie lasse ich den Code laufen?
@@ -14,9 +13,7 @@ Diese installiert alles nötige, um den Code laufen zu lassen.
 2. Gebe das folgende ins Terminal ein:
 pyinstaller --onefile --add-data "youtube.ico:." --add-binary "PATH_TO_FFMPEG:." main.py -y -w -n="Youtube_downloader"
 3. Die ausführbare Datei finden sie in dem ordner dist
-
-
-## erstellt von tech08mag 
+ 
 
 [![Python][Python]][Python-url] [![ctk][ctk]][ctk-url] [![yt-dlp][yt-dlp]][yt-dlp-url]
 
@@ -87,6 +84,9 @@ pyinstaller --onefile --add-data "youtube.ico:." --add-binary "PATH_TO_ffmpeg.ex
 ```
 
 3. Die ausführbare Datei findet sich in dem Ordner `dist` wieder
+
+## erstellt von tech08mag
+<img src="https://github.com/Tech08mag/Tech08mag/blob/main/profile.jpeg" alt="Profile">
 
 [Python]: https://img.shields.io/badge/Language-Python-green
 [Python-url]: https://www.python.org/
