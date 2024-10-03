@@ -41,8 +41,9 @@ def format_selector(ctx):
         'ext': best_video['ext'],
         'requested_formats': [best_video, best_audio],
         # Must be + separated list of protocols
-        'protocol': f'{best_video["protocol"]}+{best_audio["protocol"]}'
+        'protocol': f'{best_video["protocol"]}+{best_audio["protocol"]}',
     }
+    
 def progress_hook(d):
     """ Custom hook to print download progress """
     # see help(yt_dlp.YoutubeDL) for all available fields and more information
@@ -121,23 +122,22 @@ ydl_opts = {
                 'format': format_selector,
                 'progress_hooks': [progress_hook],
                 'logger': Logger(LOG_STATES),
+                'restrictfilenames': True
             }
 
 with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-    #scheiß link https://www.youtube.com/watch?v=RCk4b9X8LYI
-    info_dict = ydl.extract_info("https://www.youtube.com/watch?v=VoqJspTMDRM", download=True)
+    info_dict = ydl.extract_info("https://www.youtube.com/watch?v=RCk4b9X8LYI", download=True)
     
     video_url = info_dict.get("url", None)
     video_id = info_dict.get("id", None)
     video_title = info_dict.get('title', None)
-    source = f"{Path.cwd()}\\{video_title}"
-    newname = f"{Path.cwd()}\\{clean_filename(video_title)}"
-    os.rename(source, newname)
-    print(os.path.exists(f"{Path.cwd()}"))
-    print(os.path.isfile(f"{newname}"))
 
-    if os.path.exists(f"{Path.cwd()}") and os.path.isfile(f"{newname}"):
+    print(os.path.exists(f"{Path.cwd()}"))
+    print(os.path.isfile(f"{video_title}"))
+    print(f"{video_title}")
+
+    if os.path.exists(f"{Path.cwd()}") and os.path.isfile(f"{video_title}"):
         save_path = filedialog.asksaveasfilename(title="Save", filetypes=[("Mp4 Files", ".mp4")], defaultextension=".mp4",
             initialdir=Path(sys.executable), initialfile=video_title)
-        shutil.move(newname, save_path)
+        shutil.move(video_title, save_path)
 
