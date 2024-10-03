@@ -5,7 +5,7 @@ __pycache__/
 
 # C extensions
 *.so
-txt.txt
+/private_help
 # Distribution / packaging
 .Python
 build/
