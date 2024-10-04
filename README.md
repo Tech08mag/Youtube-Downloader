@@ -3,17 +3,18 @@
 (Es wird vorrausgesetzt, dass man Python installiert hat)
 
 ## Wie lasse ich den Code laufen?
+
 1. Gebe 'pip install -r requirements.txt' ins Terminal ein.
-Diese installiert alles nötige, um den Code laufen zu lassen.
+   Diese installiert alles nötige, um den Code laufen zu lassen.
 2. Führe die main.py aus
 3. Gebe einen Link ein und die gewünschte Auflösung. Anschließend kannst du das Video in dem Ordner "Videos" finden.
 
 ## Wie erstelle ich eine .exe oder eine andere ausführbare Datei
+
 1. installiere pyinstaller
 2. Gebe das folgende ins Terminal ein:
-pyinstaller --onefile --add-data "youtube.ico:." --add-binary "PATH_TO_FFMPEG:." main.py -y -w -n="Youtube_downloader"
+   pyinstaller --onefile --add-data "youtube.ico:." --add-binary "PATH_TO_FFMPEG:." main.py -y -w -n="Youtube_downloader"
 3. Die ausführbare Datei finden sie in dem ordner dist
- 
 
 [![Python][Python]][Python-url] [![ctk][ctk]][ctk-url] [![yt-dlp][yt-dlp]][yt-dlp-url]
 
@@ -21,7 +22,7 @@ pyinstaller --onefile --add-data "youtube.ico:." --add-binary "PATH_TO_FFMPEG:."
 
 - [x] YouTube-Videos in der höchsten Auflösungen herunterladen
 - [x] Grafisches Userinterface mit [custom tkinter](https://customtkinter.tomschimansky.com/)
-
+- [x] Datei an einem beliebigen Ort im Dateisystem ablegen
 
 ## Vorraussetzungen
 
@@ -86,6 +87,7 @@ pyinstaller --onefile --add-data "youtube.ico:." --add-binary "PATH_TO_ffmpeg.ex
 3. Die ausführbare Datei findet sich in dem Ordner `dist` wieder
 
 ## erstellt von tech08mag
+
 <img src="https://github.com/Tech08mag/Tech08mag/blob/main/profile.jpeg" alt="Profile">
 
 [Python]: https://img.shields.io/badge/Language-Python-green
