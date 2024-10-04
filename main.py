@@ -151,6 +151,7 @@ class App(customtkinter.CTk):
 
         self.entry = customtkinter.CTkEntry(self.main_frame, placeholder_text="Youtube link", fg_color="transparent")
         self.entry.pack(padx=10, pady=10, fill='x', expand=True)
+        self.entry.bind(sequence="<Return>", command=self.enter_callback)
 
         self.check_var = customtkinter.StringVar(value="off")
         self.checkbox = customtkinter.CTkCheckBox(self.main_frame, text="Only Audio", command=self.checkbox_event,
@@ -159,6 +160,74 @@ class App(customtkinter.CTk):
 
         self.button = customtkinter.CTkButton(self.main_frame, text="download", command=self.button_callback)
         self.button.pack(padx=10, pady=10, fill='x', expand=True)
+    
+    def enter_callback(self, *args):
+        print("executed")
+        URL = self.entry.get()
+        if str(URL) == "":
+            self.open_Error()
+    
+        if self.checkbox_event() == "on":
+            self.open_Sucess()
+            ydl_opts = {
+                'format': format_selector_mp3,
+                'progress_hooks': [progress_hook],
+                'logger': Logger(LOG_STATES),
+            }
+            with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+                info_dict = ydl.extract_info(URL, download=True)
+                video_url = info_dict.get("url", None)
+                video_id = info_dict.get("id", None)
+                video_title = info_dict.get('title', None)
+                chars = filefix.get_ending(link=URL)
+                video_title_path = f"{Path.cwd()}\\{video_title}.mp3"
+                try:
+                    (
+	                ffmpeg.input(f"{video_title} [{chars}].mp4")
+	                .output(f"{video_title}.mp3")
+	                .run()
+                    )
+                except Exception:
+                    (
+	                ffmpeg.input(f"{video_title} [{chars}].webm")
+	                .output(f"{video_title}.mp3")
+	                .run()
+                    )
+                if os.path.exists(Path.cwd()) and os.path.isfile(f"{video_title}.mp3") == True:
+                    save_path = filedialog.asksaveasfilename(title="Save", filetypes=[("Mp3 Files", ".mp3")], defaultextension=".mp3",
+                        initialdir=Path(sys.executable), initialfile=video_title)
+                    shutil.move(video_title_path, save_path)
+        else:
+            self.open_Sucess()
+            ydl_opts = {
+                'format': format_selector_mp4,
+                'progress_hooks': [progress_hook],
+                'logger': Logger(LOG_STATES),
+            }
+
+            with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+                info_dict = ydl.extract_info(URL, download=True)
+
+                video_url = info_dict.get("url", None)
+                video_id = info_dict.get("id", None)
+                video_title = info_dict.get('title', None)
+                chars = filefix.get_ending(link=URL)
+
+                try:
+                    (
+	                ffmpeg.input(f"{video_title} [{chars}].webm")
+	                .output(f"{video_title}.mp4")
+	                .run()
+                    )
+                except Exception:
+                        os.rename(f"{Path.cwd()}\\{video_title} [{chars}].mp4", f"{Path.cwd()}\\{video_title}.mp4")
+                        video_title_path = f"{Path.cwd()}\\{video_title}.mp4"
+
+                if os.path.exists(Path.cwd()) and os.path.isfile(f"{video_title}.mp4") == True:
+                    save_path = filedialog.asksaveasfilename(title="Save", filetypes=[("Mp4 Files", ".mp4")], defaultextension=".mp4",
+                        initialdir=Path(sys.executable), initialfile=video_title)
+                    shutil.move(video_title_path, save_path)
+            self.open_Finished()
 
     def open_Error(self):
             if self.toplevel_window is None or not self.toplevel_window.winfo_exists():
@@ -253,6 +322,8 @@ class App(customtkinter.CTk):
                         initialdir=Path(sys.executable), initialfile=video_title)
                     shutil.move(video_title_path, save_path)
             self.open_Finished()
+
+
 
 app = App()
 app.mainloop()
