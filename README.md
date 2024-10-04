@@ -23,6 +23,7 @@
 - [x] YouTube-Videos in der höchsten Auflösungen herunterladen
 - [x] Grafisches Userinterface mit [custom tkinter](https://customtkinter.tomschimansky.com/)
 - [x] Datei an einem beliebigen Ort im Dateisystem ablegen
+- [x] Output file ist immer eine .mp4
 
 ## Vorraussetzungen
 

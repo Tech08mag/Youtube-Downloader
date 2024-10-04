@@ -2,7 +2,7 @@ import customtkinter, yt_dlp
 from messages import Error, Success, Finished
 from tkinter import filedialog
 from pathlib import Path
-import os, sys, shutil, filefix
+import os, sys, shutil, filefix, ffmpeg
 
 LOG_STATES = {
     'debug': False,
@@ -15,27 +15,20 @@ def format_selector(ctx):
     """ Select the best video and the best audio that won't result in an mkv.
     NOTE: This is just an example and does not handle all cases """
 
-    # Reverse the formats list to start from the best quality
+    # formats are already sorted worst to best
     formats = ctx.get('formats')[::-1]
 
     # acodec='none' means there is no audio
-    best_video = next(
-        f for f in formats if f['vcodec'] != 'none' and f['acodec'] == 'none')
-
-    print(f"\033[92m[INFO]:\033[00m Best video picked: {best_video['format_note']}")
+    best_video = next(f for f in formats
+                      if f['vcodec'] != 'none' and f['acodec'] == 'none')
 
     # find compatible audio extension
-    audio_ext = {'mp4': 'm4a', 'webm': 'webm'}.get(best_video['ext'], None)
-
-    if audio_ext is None:
-        print('\033[91m[ERROR]:\033[00m No compatible audio extension found!')
-        return
-
+    audio_ext = {'mp4': 'm4a', 'webm': 'webm'}[best_video['ext']]
     # vcodec='none' means there is no video
     best_audio = next(f for f in formats if (
         f['acodec'] != 'none' and f['vcodec'] == 'none' and f['ext'] == audio_ext))
 
-    # minimum required fields for a merged format
+    # These are the minimum required fields for a merged format
     yield {
         'format_id': f'{best_video["format_id"]}+{best_audio["format_id"]}',
         'ext': best_video['ext'],
@@ -43,6 +36,7 @@ def format_selector(ctx):
         # Must be + separated list of protocols
         'protocol': f'{best_video["protocol"]}+{best_audio["protocol"]}'
     }
+    
 
 def progress_hook(d):
     """ Custom hook to print download progress """
@@ -158,7 +152,6 @@ class App(customtkinter.CTk):
         URL = self.entry.get()
         if str(URL) == "":
             self.open_Error()
-            pass
         else:
             self.open_Sucess()
             ydl_opts = {
@@ -173,10 +166,17 @@ class App(customtkinter.CTk):
                 video_url = info_dict.get("url", None)
                 video_id = info_dict.get("id", None)
                 video_title = info_dict.get('title', None)
-
                 chars = filefix.get_ending(link=URL)
-                os.rename(f"{Path.cwd()}\\{video_title} [{chars}].mp4", f"{Path.cwd()}\\{video_title}.mp4")
-                video_title_path = f"{Path.cwd()}\\{video_title}.mp4"
+
+                try:
+                    (
+	                ffmpeg.input(f"{video_title} [{chars}].webm")
+	                .output(f"{video_title}.mp4")
+	                .run()
+                    )
+                except Exception:
+                        os.rename(f"{Path.cwd()}\\{video_title} [{chars}].mp4", f"{Path.cwd()}\\{video_title}.mp4")
+                        video_title_path = f"{Path.cwd()}\\{video_title}.mp4"
 
                 if os.path.exists(Path.cwd()) and os.path.isfile(f"{video_title}.mp4") == True:
                     save_path = filedialog.asksaveasfilename(title="Save", filetypes=[("Mp4 Files", ".mp4")], defaultextension=".mp4",
