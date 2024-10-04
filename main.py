@@ -49,7 +49,7 @@ def format_selector_mp3(ctx):
                       if f['vcodec'] != 'none' and f['acodec'] == 'none')
 
     # find compatible audio extension
-    audio_ext = {'mp3': 'm3a', 'mp4': 'm4a'}[best_video['ext']]
+    audio_ext = {'mp3': 'm3a', 'mp4': 'm4a', 'webm': 'webm'}[best_video['ext']]
     # vcodec='none' means there is no video
     best_audio = next(f for f in formats if (
         f['acodec'] != 'none' and f['vcodec'] == 'none' and f['ext'] == audio_ext))
@@ -152,6 +152,11 @@ class App(customtkinter.CTk):
         self.entry = customtkinter.CTkEntry(self.main_frame, placeholder_text="Youtube link", fg_color="transparent")
         self.entry.pack(padx=10, pady=10, fill='x', expand=True)
 
+        self.check_var = customtkinter.StringVar(value="off")
+        self.checkbox = customtkinter.CTkCheckBox(self.main_frame, text="Only Audio", command=self.checkbox_event,
+                                     variable=self.check_var, onvalue="on", offvalue="off")
+        self.checkbox.pack(padx=10, pady=10, fill='x', expand=True)
+
         self.button = customtkinter.CTkButton(self.main_frame, text="download", command=self.button_callback)
         self.button.pack(padx=10, pady=10, fill='x', expand=True)
 
@@ -172,12 +177,51 @@ class App(customtkinter.CTk):
             self.toplevel_window = Finished(self)  # create window if its None or destroyed
         else:
             self.toplevel_window.focus()
+    
+    def checkbox_event(self):
+        checkbox_Value = self.check_var.get()
+        return checkbox_Value
 
     def button_callback(self):
         URL = self.entry.get()
         if str(URL) == "":
             self.open_Error()
         
+        elif self.checkbox_event() == "on":
+            self.open_Sucess()
+            ydl_opts = {
+                'format': format_selector_mp3,
+                'progress_hooks': [progress_hook],
+                'logger': Logger(LOG_STATES),
+            }
+
+            with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+                info_dict = ydl.extract_info(URL, download=True)
+
+                video_url = info_dict.get("url", None)
+                video_id = info_dict.get("id", None)
+                video_title = info_dict.get('title', None)
+                chars = filefix.get_ending(link=URL)
+                video_title_path = f"{Path.cwd()}\\{video_title}.mp3"
+
+                try:
+                    (
+	                ffmpeg.input(f"{video_title} [{chars}].mp4")
+	                .output(f"{video_title}.mp3")
+	                .run()
+                    )
+                    
+                except Exception:
+                    (
+	                ffmpeg.input(f"{video_title} [{chars}].webm")
+	                .output(f"{video_title}.mp3")
+	                .run()
+                    )
+
+                if os.path.exists(Path.cwd()) and os.path.isfile(f"{video_title}.mp3") == True:
+                    save_path = filedialog.asksaveasfilename(title="Save", filetypes=[("Mp3 Files", ".mp3")], defaultextension=".mp3",
+                        initialdir=Path(sys.executable), initialfile=video_title)
+                    shutil.move(video_title_path, save_path)
         else:
             self.open_Sucess()
             ydl_opts = {
