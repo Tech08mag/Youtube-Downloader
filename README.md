@@ -26,6 +26,10 @@
 - [x] Output file ist immer eine .mp4/.mp3
 - [x] Enter downloadet das Video
 
+# To Do
+
+- User die Resolution auswählen lassen
+
 ## Vorraussetzungen
 
 - [ffmpeg](https://ffmpeg.org/download.html)
