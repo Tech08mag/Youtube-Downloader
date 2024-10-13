@@ -29,6 +29,8 @@
 # To Do
 
 - User die Resolution auswählen lassen
+- config.json für default path
+- Webinterface + Flask Backend
 
 ## Vorraussetzungen
 
