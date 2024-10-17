@@ -27,6 +27,12 @@
 - [x] Enter downloadet das Video
 - [x] Path in settings.json angeben
 
+# To Do
+
+- User die Resolution auswählen lassen
+- config.json für default path
+- Webinterface + Flask Backend
+
 ## Vorraussetzungen
 
 - [ffmpeg](https://ffmpeg.org/download.html)
