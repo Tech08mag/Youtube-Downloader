@@ -25,6 +25,7 @@
 - [x] Datei an einem beliebigen Ort im Dateisystem ablegen
 - [x] Output file ist immer eine .mp4/.mp3
 - [x] Enter downloadet das Video
+- [x] Path in settings.json angeben
 
 ## Vorraussetzungen
 

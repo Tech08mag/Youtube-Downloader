@@ -145,185 +145,214 @@ class App(customtkinter.CTk):
         self.geometry("500x400")
         self.resizable(True, True)
         self.toplevel_window = None
+        self.value_storage = ["You need to input a link"]
 
         self.main_frame = customtkinter.CTkFrame(self)
         self.main_frame.pack(padx=10, pady=10, fill='x', expand=True)
 
         self.entry = customtkinter.CTkEntry(self.main_frame, placeholder_text="Youtube link", fg_color="transparent")
         self.entry.pack(padx=10, pady=10, fill='x', expand=True)
-        self.entry.bind(sequence="<Return>", command=self.enter_callback)
+        self.entry.bind(sequence="<Return>", command=lambda _: self.load_resolutions())
 
         self.check_var = customtkinter.StringVar(value="off")
-        self.checkbox = customtkinter.CTkCheckBox(self.main_frame, text="Only Audio", command=self.checkbox_event,
+        self.checkbox = customtkinter.CTkCheckBox(self.main_frame, text="Only Audio",
                                      variable=self.check_var, onvalue="on", offvalue="off")
-        self.checkbox.pack(padx=10, pady=10, fill='x', expand=True)
+        self.checkbox.pack(padx=10, pady=10, fill='x')
+
+        self.path_var = customtkinter.StringVar(value="on")
+        self.path_check = customtkinter.CTkCheckBox(self.main_frame, text="Download to Path",
+                                 variable=self.path_var, onvalue="on", offvalue="off")
+        self.path_check.pack(padx=10, pady=10, fill='x')
+
+        self.optionmenu_var = customtkinter.StringVar(value=self.value_storage[0])
+        self.optionmenu = customtkinter.CTkOptionMenu(self.main_frame, values=self.value_storage, variable=self.optionmenu_var)
+        self.optionmenu.pack(padx=10, pady=10, fill='x', expand=True)
 
         self.button = customtkinter.CTkButton(self.main_frame, text="download", command=self.button_callback)
         self.button.pack(padx=10, pady=10, fill='x', expand=True)
-    
-    def enter_callback(self, *args):
-        print("executed")
-        URL = self.entry.get()
-        if str(URL) == "":
-            self.open_Error()
-    
-        if self.checkbox_event() == "on":
-            self.open_Sucess()
-            ydl_opts = {
-                'format': format_selector_mp3,
-                'progress_hooks': [progress_hook],
-                'logger': Logger(LOG_STATES),
-            }
-            with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-                info_dict = ydl.extract_info(URL, download=True)
-                video_url = info_dict.get("url", None)
-                video_id = info_dict.get("id", None)
-                video_title = info_dict.get('title', None)
-                chars = filefix.get_ending(link=URL)
-                video_title_path = f"{Path.cwd()}\\{video_title}.mp3"
-                try:
-                    (
-	                ffmpeg.input(f"{video_title} [{chars}].mp4")
-	                .output(f"{video_title}.mp3")
-	                .run()
-                    )
-                except Exception:
-                    (
-	                ffmpeg.input(f"{video_title} [{chars}].webm")
-	                .output(f"{video_title}.mp3")
-	                .run()
-                    )
-                if os.path.exists(Path.cwd()) and os.path.isfile(f"{video_title}.mp3") == True:
-                    save_path = filedialog.asksaveasfilename(title="Save", filetypes=[("Mp3 Files", ".mp3")], defaultextension=".mp3",
-                        initialdir=Path(sys.executable), initialfile=video_title)
-                    shutil.move(video_title_path, save_path)
-        else:
-            self.open_Sucess()
-            ydl_opts = {
-                'format': format_selector_mp4,
-                'progress_hooks': [progress_hook],
-                'logger': Logger(LOG_STATES),
-            }
-
-            with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-                info_dict = ydl.extract_info(URL, download=True)
-
-                video_url = info_dict.get("url", None)
-                video_id = info_dict.get("id", None)
-                video_title = info_dict.get('title', None)
-                chars = filefix.get_ending(link=URL)
-
-                try:
-                    (
-	                ffmpeg.input(f"{video_title} [{chars}].webm")
-	                .output(f"{video_title}.mp4")
-	                .run()
-                    )
-                except Exception:
-                        os.rename(f"{Path.cwd()}\\{video_title} [{chars}].mp4", f"{Path.cwd()}\\{video_title}.mp4")
-                        video_title_path = f"{Path.cwd()}\\{video_title}.mp4"
-
-                if os.path.exists(Path.cwd()) and os.path.isfile(f"{video_title}.mp4") == True:
-                    save_path = filedialog.asksaveasfilename(title="Save", filetypes=[("Mp4 Files", ".mp4")], defaultextension=".mp4",
-                        initialdir=Path(sys.executable), initialfile=video_title)
-                    shutil.move(video_title_path, save_path)
-            self.open_Finished()
 
     def open_Error(self):
             if self.toplevel_window is None or not self.toplevel_window.winfo_exists():
-                self.toplevel_window = Error(self)  # create window if its None or destroyed
+                self.toplevel_window = Error(self) 
             else:
                 self.toplevel_window.focus()
 
     def open_Sucess(self):
             if self.toplevel_window is None or not self.toplevel_window.winfo_exists():
-                self.toplevel_window = Success(self)  # create window if its None or destroyed
+                self.toplevel_window = Success(self)
             else:
                 self.toplevel_window.focus()
     
     def open_Finished(self):
         if self.toplevel_window is None or not self.toplevel_window.winfo_exists():
-            self.toplevel_window = Finished(self)  # create window if its None or destroyed
+            self.toplevel_window = Finished(self) 
         else:
             self.toplevel_window.focus()
-    
-    def checkbox_event(self):
-        checkbox_Value = self.check_var.get()
-        return checkbox_Value
+
+    def load_resolutions(self):
+        URL = self.entry.get()
+        if URL == "":
+            self.open_Error()
+
+        yd_opts = {
+            # 'listformats': True,
+            'quiet': True,
+            'no_warnings': True,
+            'skip_download': True
+        }
+        with yt_dlp.YoutubeDL(yd_opts) as ydl:
+            info = ydl.extract_info(URL, download=False)
+            formats = info.get('formats', [])
+            # filter only video formats and get the resolutions
+            video_formats = [f for f in formats if f.get('vcodec') != 'none']
+            resolutions = set([f.get('resolution') for f in video_formats])
+            # update the option menu
+            self.optionmenu_var.set(next(iter(resolutions)) if resolutions else "No video formats found")
+            self.optionmenu.configure(values=resolutions)
 
     def button_callback(self):
         URL = self.entry.get()
         if str(URL) == "":
             self.open_Error()
-        
-        elif self.checkbox_event() == "on":
-            self.open_Sucess()
-            ydl_opts = {
-                'format': format_selector_mp3,
-                'progress_hooks': [progress_hook],
-                'logger': Logger(LOG_STATES),
-            }
-
-            with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-                info_dict = ydl.extract_info(URL, download=True)
-
-                video_url = info_dict.get("url", None)
-                video_id = info_dict.get("id", None)
-                video_title = info_dict.get('title', None)
-                chars = filefix.get_ending(link=URL)
-                video_title_path = f"{Path.cwd()}\\{video_title}.mp3"
-
-                try:
-                    (
-	                ffmpeg.input(f"{video_title} [{chars}].mp4")
-	                .output(f"{video_title}.mp3")
-	                .run()
-                    )
-                    
-                except Exception:
-                    (
-	                ffmpeg.input(f"{video_title} [{chars}].webm")
-	                .output(f"{video_title}.mp3")
-	                .run()
-                    )
-
-                if os.path.exists(Path.cwd()) and os.path.isfile(f"{video_title}.mp3") == True:
-                    save_path = filedialog.asksaveasfilename(title="Save", filetypes=[("Mp3 Files", ".mp3")], defaultextension=".mp3",
-                        initialdir=Path(sys.executable), initialfile=video_title)
-                    shutil.move(video_title_path, save_path)
         else:
-            self.open_Sucess()
-            ydl_opts = {
-                'format': format_selector_mp4,
-                'progress_hooks': [progress_hook],
-                'logger': Logger(LOG_STATES),
-            }
+            if self.check_var.get() == "on" and self.path_var.get() == "on":
+                self.open_Sucess()
+                data = open("settings.txt", "r")
+                path = data.read()
+                ydl_opts = {
+                    'format': format_selector_mp3,
+                    'progress_hooks': [progress_hook],
+                    'logger': Logger(LOG_STATES),
+                }
 
-            with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-                info_dict = ydl.extract_info(URL, download=True)
+                with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+                    info_dict = ydl.extract_info(URL, download=True)
 
-                video_url = info_dict.get("url", None)
-                video_id = info_dict.get("id", None)
-                video_title = info_dict.get('title', None)
-                chars = filefix.get_ending(link=URL)
+                    video_url = info_dict.get("url", None)
+                    video_id = info_dict.get("id", None)
+                    video_title = info_dict.get('title', None)
+                    chars = filefix.get_ending(link=URL)
+                    video_title_path = f"{Path.cwd()}\\{video_title}.mp3"
 
-                try:
-                    (
-	                ffmpeg.input(f"{video_title} [{chars}].webm")
-	                .output(f"{video_title}.mp4")
-	                .run()
-                    )
-                except Exception:
-                        os.rename(f"{Path.cwd()}\\{video_title} [{chars}].mp4", f"{Path.cwd()}\\{video_title}.mp4")
-                        video_title_path = f"{Path.cwd()}\\{video_title}.mp4"
+                    try:
+                        (
+	                    ffmpeg.input(f"{video_title} [{chars}].mp4")
+	                    .output(f"{video_title}.mp3")
+	                    .run()
+                        )
 
-                if os.path.exists(Path.cwd()) and os.path.isfile(f"{video_title}.mp4") == True:
-                    save_path = filedialog.asksaveasfilename(title="Save", filetypes=[("Mp4 Files", ".mp4")], defaultextension=".mp4",
-                        initialdir=Path(sys.executable), initialfile=video_title)
-                    shutil.move(video_title_path, save_path)
-            self.open_Finished()
+                    except Exception:
+                        (
+	                    ffmpeg.input(f"{video_title} [{chars}].webm")
+	                    .output(f"{video_title}.mp3")
+	                    .run()
+                        )
+
+                    if os.path.exists(Path.cwd()) and os.path.isfile(f"{video_title}.mp3") == True:
+                        shutil.move(video_title_path, path)
+                    data.close()
+            
+            elif self.path_var.get() == "on":
+                self.open_Sucess()
+                data = open("settings.txt", "r")
+                path = data.read()
+                ydl_opts = {
+                    'format': format_selector_mp4,
+                    'progress_hooks': [progress_hook],
+                    'logger': Logger(LOG_STATES),
+                }
+
+                with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+                    info_dict = ydl.extract_info(URL, download=True)
+
+                    video_url = info_dict.get("url", None)
+                    video_id = info_dict.get("id", None)
+                    video_title = info_dict.get('title', None)
+                    chars = filefix.get_ending(link=URL)
+
+                    try:
+                        (
+	                    ffmpeg.input(f"{video_title} [{chars}].webm")
+	                    .output(f"{video_title}.mp4")
+	                    .run()
+                        )
+                    except Exception:
+                            os.rename(f"{Path.cwd()}\\{video_title} [{chars}].mp4", f"{Path.cwd()}\\{video_title}.mp4")
+                            video_title_path = f"{Path.cwd()}\\{video_title}.mp4"
+
+                    if os.path.exists(Path.cwd()) and os.path.isfile(f"{video_title}.mp4") == True:
+                        shutil.move(video_title_path, path)
+                data.close()
+                self.open_Finished()
+
+            elif self.check_var.get() == "on":
+                self.open_Sucess()
+                ydl_opts = {
+                    'format': format_selector_mp3,
+                    'progress_hooks': [progress_hook],
+                    'logger': Logger(LOG_STATES),
+                }
+
+                with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+                    info_dict = ydl.extract_info(URL, download=True)
+
+                    video_url = info_dict.get("url", None)
+                    video_id = info_dict.get("id", None)
+                    video_title = info_dict.get('title', None)
+                    chars = filefix.get_ending(link=URL)
+                    video_title_path = f"{Path.cwd()}\\{video_title}.mp3"
+
+                    try:
+                        (
+	                    ffmpeg.input(f"{video_title} [{chars}].mp4")
+	                    .output(f"{video_title}.mp3")
+	                    .run()
+                        )
+
+                    except Exception:
+                        (
+	                    ffmpeg.input(f"{video_title} [{chars}].webm")
+	                    .output(f"{video_title}.mp3")
+	                    .run()
+                        )
+
+                    if os.path.exists(Path.cwd()) and os.path.isfile(f"{video_title}.mp3") == True:
+                        save_path = filedialog.asksaveasfilename(title="Save", filetypes=[("Mp3 Files", ".mp3")], defaultextension=".mp3",
+                            initialdir=Path(sys.executable), initialfile=video_title)
+                        shutil.move(video_title_path, save_path)
+            else:
+                self.open_Sucess()
+                ydl_opts = {
+                    'format': format_selector_mp4,
+                    'progress_hooks': [progress_hook],
+                    'logger': Logger(LOG_STATES),
+                }
+
+                with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+                    info_dict = ydl.extract_info(URL, download=True)
+
+                    video_url = info_dict.get("url", None)
+                    video_id = info_dict.get("id", None)
+                    video_title = info_dict.get('title', None)
+                    chars = filefix.get_ending(link=URL)
+
+                    try:
+                        (
+	                    ffmpeg.input(f"{video_title} [{chars}].webm")
+	                    .output(f"{video_title}.mp4")
+	                    .run()
+                        )
+                    except Exception:
+                            os.rename(f"{Path.cwd()}\\{video_title} [{chars}].mp4", f"{Path.cwd()}\\{video_title}.mp4")
+                            video_title_path = f"{Path.cwd()}\\{video_title}.mp4"
+
+                    if os.path.exists(Path.cwd()) and os.path.isfile(f"{video_title}.mp4") == True:
+                        save_path = filedialog.asksaveasfilename(title="Save", filetypes=[("Mp4 Files", ".mp4")], defaultextension=".mp4",
+                            initialdir=Path(sys.executable), initialfile=video_title)
+                        shutil.move(video_title_path, save_path)
+                self.open_Finished()
 
 
-
-app = App()
-app.mainloop()
+if __name__ == '__main__':
+    app = App()
+    app.mainloop()
