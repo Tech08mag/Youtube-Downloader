@@ -11,7 +11,6 @@ LOG_STATES = {
     'error': True
 }
 
-
 class App(customtkinter.CTk):
     def __init__(self):
         super().__init__()
@@ -74,9 +73,9 @@ class App(customtkinter.CTk):
             'quiet': True,
             'no_warnings': True,
             'skip_download': True,
-            'ignoreerrors': True,
-            'noplaylist': True,
+            'ignoreerrors': True
         }
+
         with yt_dlp.YoutubeDL(yd_opts) as ydl:
             info = ydl.extract_info(URL, download=False)
             formats = info.get('formats', [])
@@ -95,10 +94,10 @@ class App(customtkinter.CTk):
             if self.playlist.get() == "on" and self.check_var.get() == "on":
                 self.open_Sucess()
                 ydl_opts = {
-                    'format': formatselector.format_selector_mp4,
+                    'format': formatselector.format_selector_mp3,
                     'progress_hooks': [logfuc.progress_hook],
                     'logger': logfuc.Logger(LOG_STATES),
-                    'ignoreerrors': True,
+                    'ignoreerrors': True
                 }
                 with yt_dlp.YoutubeDL(ydl_opts) as ydl:
                     info_dict = ydl.extract_info(URL, download=True)
@@ -108,6 +107,24 @@ class App(customtkinter.CTk):
                     video_title = info_dict.get('title', None)
                     chars = filefix.get_ending(link=URL)
                     video_title_path = f"{Path.cwd()}\\{video_title}.mp3"
+
+            elif self.playlist.get() == "on":
+                self.open_Sucess()
+                ydl_opts = {
+                    'format': formatselector.format_selector_mp4,
+                    'progress_hooks': [logfuc.progress_hook],
+                    'logger': logfuc.Logger(LOG_STATES),
+                    'ignoreerrors': True
+                }
+                with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+                    info_dict = ydl.extract_info(URL, download=True)
+
+                    video_url = info_dict.get("url", None)
+                    video_id = info_dict.get("id", None)
+                    video_title = info_dict.get('title', None)
+                    chars = filefix.get_ending(link=URL)
+                    video_title_path = f"{Path.cwd()}\\{video_title}.mp3"
+
 
             elif self.check_var.get() == "on":
                 self.open_Sucess()
