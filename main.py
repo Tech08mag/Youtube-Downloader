@@ -1,8 +1,19 @@
-import customtkinter, yt_dlp
+# /// script
+# requires-python = ">=3.11"
+# dependencies = [
+#     "customtkinter>=5.2.2",
+#     "ffmpeg-python>=0.2.0",
+#     "tk>=0.1.0",
+#     "yt-dlp>=2025.7.21",
+# ]
+# ///
+import customtkinter
+import yt_dlp
 from messages import Error, Succes, Finished
-from tkinter import filedialog
-from pathlib import Path
-import os, sys, shutil, filefix, ffmpeg, formatselector, logfuc, convert
+import filefix
+import formatselector
+import logfuc
+import convert
 
 LOG_STATES = {
     'debug': False,
@@ -101,12 +112,8 @@ class App(customtkinter.CTk):
                 }
                 with yt_dlp.YoutubeDL(ydl_opts) as ydl:
                     info_dict = ydl.extract_info(URL, download=True)
-
-                    video_url = info_dict.get("url", None)
-                    video_id = info_dict.get("id", None)
                     video_title = info_dict.get('title', None)
                     chars = filefix.get_ending(link=URL)
-                    video_title_path = f"{Path.cwd()}\\{video_title}.mp3"
 
             elif self.playlist.get() == "on":
                 self.open_Sucess()
@@ -118,13 +125,8 @@ class App(customtkinter.CTk):
                 }
                 with yt_dlp.YoutubeDL(ydl_opts) as ydl:
                     info_dict = ydl.extract_info(URL, download=True)
-
-                    video_url = info_dict.get("url", None)
-                    video_id = info_dict.get("id", None)
                     video_title = info_dict.get('title', None)
                     chars = filefix.get_ending(link=URL)
-                    video_title_path = f"{Path.cwd()}\\{video_title}.mp3"
-
 
             elif self.check_var.get() == "on":
                 self.open_Sucess()
@@ -139,11 +141,9 @@ class App(customtkinter.CTk):
                 with yt_dlp.YoutubeDL(ydl_opts) as ydl:
                     info_dict = ydl.extract_info(URL, download=True)
 
-                    video_url = info_dict.get("url", None)
-                    video_id = info_dict.get("id", None)
                     video_title = info_dict.get('title', None)
                     chars = filefix.get_ending(link=URL)
-                    video_title_path = f"{Path.cwd()}\\{video_title}.mp3"
+
 
                     convert.convert_to_mp3(video_title=video_title, chars=chars)
 
@@ -159,13 +159,9 @@ class App(customtkinter.CTk):
 
                 with yt_dlp.YoutubeDL(ydl_opts) as ydl:
                     info_dict = ydl.extract_info(URL, download=True)
-
-                    video_url = info_dict.get("url", None)
-                    video_id = info_dict.get("id", None)
                     video_title = info_dict.get('title', None)
                     print(video_title)
                     chars = filefix.get_ending(link=URL)
-                    video_title_path = f"{Path.cwd()}\\{video_title}.mp3"
 
                     convert.convert_to_mp3(video_title=video_title, chars=chars)
             else:
@@ -180,9 +176,6 @@ class App(customtkinter.CTk):
 
                 with yt_dlp.YoutubeDL(ydl_opts) as ydl:
                     info_dict = ydl.extract_info(URL, download=True)
-
-                    video_url = info_dict.get("url", None)
-                    video_id = info_dict.get("id", None)
                     video_title = info_dict.get('title', None)
                     chars = filefix.get_ending(link=URL)
                 self.open_Finished()

@@ -1,0 +1,81 @@
+version = 1
+revision = 2
+requires-python = ">=3.11"
+
+[manifest]
+requirements = [
+    { name = "customtkinter", specifier = ">=5.2.2" },
+    { name = "ffmpeg-python", specifier = ">=0.2.0" },
+    { name = "tk", specifier = ">=0.1.0" },
+    { name = "yt-dlp", specifier = ">=2025.7.21" },
+]
+
+[[package]]
+name = "customtkinter"
+version = "5.2.2"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "darkdetect" },
+    { name = "packaging" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/cf/48/c5a9d44188c44702e1e3db493c741e9c779596835a761b819fe15431d163/customtkinter-5.2.2.tar.gz", hash = "sha256:fd8db3bafa961c982ee6030dba80b4c2e25858630756b513986db19113d8d207", size = 261999, upload-time = "2024-01-10T02:24:36.314Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/3b/b1/b43b33001a77256b335511e75f257d001082350b8506c8807f30c98db052/customtkinter-5.2.2-py3-none-any.whl", hash = "sha256:14ad3e7cd3cb3b9eb642b9d4e8711ae80d3f79fb82545ad11258eeffb2e6b37c", size = 296062, upload-time = "2024-01-10T02:24:33.53Z" },
+]
+
+[[package]]
+name = "darkdetect"
+version = "0.8.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/45/77/7575be73bf12dee231d0c6e60ce7fb7a7be4fcd58823374fc59a6e48262e/darkdetect-0.8.0.tar.gz", hash = "sha256:b5428e1170263eb5dea44c25dc3895edd75e6f52300986353cd63533fe7df8b1", size = 7681, upload-time = "2022-12-16T14:14:42.113Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/f2/f2/728f041460f1b9739b85ee23b45fa5a505962ea11fd85bdbe2a02b021373/darkdetect-0.8.0-py3-none-any.whl", hash = "sha256:a7509ccf517eaad92b31c214f593dbcf138ea8a43b2935406bbd565e15527a85", size = 8955, upload-time = "2022-12-16T14:14:40.92Z" },
+]
+
+[[package]]
+name = "ffmpeg-python"
+version = "0.2.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "future" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/dd/5e/d5f9105d59c1325759d838af4e973695081fbbc97182baf73afc78dec266/ffmpeg-python-0.2.0.tar.gz", hash = "sha256:65225db34627c578ef0e11c8b1eb528bb35e024752f6f10b78c011f6f64c4127", size = 21543, upload-time = "2019-07-06T00:19:08.989Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/d7/0c/56be52741f75bad4dc6555991fabd2e07b432d333da82c11ad701123888a/ffmpeg_python-0.2.0-py3-none-any.whl", hash = "sha256:ac441a0404e053f8b6a1113a77c0f452f1cfc62f6344a769475ffdc0f56c23c5", size = 25024, upload-time = "2019-07-06T00:19:07.215Z" },
+]
+
+[[package]]
+name = "future"
+version = "1.0.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/a7/b2/4140c69c6a66432916b26158687e821ba631a4c9273c474343badf84d3ba/future-1.0.0.tar.gz", hash = "sha256:bd2968309307861edae1458a4f8a4f3598c03be43b97521076aebf5d94c07b05", size = 1228490, upload-time = "2024-02-21T11:52:38.461Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/da/71/ae30dadffc90b9006d77af76b393cb9dfbfc9629f339fc1574a1c52e6806/future-1.0.0-py3-none-any.whl", hash = "sha256:929292d34f5872e70396626ef385ec22355a1fae8ad29e1a734c3e43f9fbc216", size = 491326, upload-time = "2024-02-21T11:52:35.956Z" },
+]
+
+[[package]]
+name = "packaging"
+version = "25.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/a1/d4/1fc4078c65507b51b96ca8f8c3ba19e6a61c8253c72794544580a7b6c24d/packaging-25.0.tar.gz", hash = "sha256:d443872c98d677bf60f6a1f2f8c1cb748e8fe762d2bf9d3148b5599295b0fc4f", size = 165727, upload-time = "2025-04-19T11:48:59.673Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/20/12/38679034af332785aac8774540895e234f4d07f7545804097de4b666afd8/packaging-25.0-py3-none-any.whl", hash = "sha256:29572ef2b1f17581046b3a2227d5c611fb25ec70ca1ba8554b24b0e69331a484", size = 66469, upload-time = "2025-04-19T11:48:57.875Z" },
+]
+
+[[package]]
+name = "tk"
+version = "0.1.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/a0/81/742b342fd642e672fbedecde725ba44db44e800dc4c936216c3c6729885a/tk-0.1.0.tar.gz", hash = "sha256:60bc8923d5d35f67f5c6bd93d4f0c49d2048114ec077768f959aef36d4ed97f8", size = 2247, upload-time = "2019-07-08T06:51:58.051Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/1e/0b/029cbdb868bb555fed99bf6540fff072d500b3f895873709f25084e85e33/tk-0.1.0-py3-none-any.whl", hash = "sha256:703a69ff0d5ba2bd2f7440582ad10160e4a6561595d33457dc6caa79b9bf4930", size = 3879, upload-time = "2019-07-08T06:51:55.175Z" },
+]
+
+[[package]]
+name = "yt-dlp"
+version = "2025.7.21"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/7e/3a/343f7a0024ddd4c30f150e8d8f57fd7b924846f97d99fc0dcd75ea8d2773/yt_dlp-2025.7.21.tar.gz", hash = "sha256:46fbb53eab1afbe184c45b4c17e9a6eba614be680e4c09de58b782629d0d7f43", size = 3050219, upload-time = "2025-07-21T23:59:03.826Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/e8/2f/abe59a3204c749fed494849ea29176bcefa186ec8898def9e43f649ddbcf/yt_dlp-2025.7.21-py3-none-any.whl", hash = "sha256:d7aa2b53f9b2f35453346360f41811a0dad1e956e70b35a4ae95039d4d815d15", size = 3288681, upload-time = "2025-07-21T23:59:01.788Z" },
+]

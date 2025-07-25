@@ -1,4 +1,4 @@
-yt-dlp;
-customtkinther;
-tk;
-ffmpeg-python;
+yt-dlp
+customtkinter
+tk
+ffmpeg-python
